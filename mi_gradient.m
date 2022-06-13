@@ -1,4 +1,4 @@
-function m = mi_gradient_original_formulation(r,q,delta_q ,n)
+function m = mi_gradient(r,q,delta_q ,n)
     m = zeros(n,1) ;
     for i = 1:n
         a=mani_index(r,q+delta_q*([zeros(1,i-1),1,zeros(1,n-i)])) ;
