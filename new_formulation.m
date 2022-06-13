@@ -29,8 +29,8 @@ function [m_s_new,q_s_new,qdot_s_new,l_s_new,u_s_new]=new_formulation(alpha)
     q(1,:)=y;
     qdot=zeros(p,n);
     % Manipulability index
-    Manipulability_Index = zeros(p,1);
-    Manipulability_Index(1)=new_mani_index(s,q(1,:));
+    tsv_traj = zeros(p,1);
+    tsv_traj(1)=tsv(s,q(1,:));
     % Defining Matrices for Optimization Problem
     Q = eye(n);
     A = [ ];
@@ -38,19 +38,19 @@ function [m_s_new,q_s_new,qdot_s_new,l_s_new,u_s_new]=new_formulation(alpha)
     l=zeros(p,1);
     u=zeros(p,1);
     for j=1:p
-        f = -alpha*T_samp*mani_grad_s_new(s,q(j,:),delta_q ,n);
+        f = -alpha*T_samp*tsv_gradient(s,q(j,:),delta_q ,n);
         Aeq = s.jacob0(q(j,:));
         %beq = [0,(-D*j^(3)/(10^(7)*T_samp^(4)) + D*j^(2)/(10^(5)*T_samp^(3))),0];
         %beq = [4*Dx/(T_total^(2))*(-j^(3)/(T_total^(2)*10^(6))+j/100),4*Dy/(T_total^(2))*(-j^(3)/(T_total^(2)*10^(6))+j/100),4*theta/(T_total^(2))*(-j^(3)/(T_total^(2)*10^(6))+j/100)];
         %beq= [35*cos(2*pi*j/600),35*sin(2*pi*j/600),0];
-        Manipulability_Index(j) = new_mani_index(s,q(j,:));
-        l=lowerb_s(q(j,:));
-        u=upperb_s(q(j,:));
+        tsv_traj(j) = tsv(s,q(j,:));
+        l=l_bound(q(j,:));
+        u=u_bound(q(j,:));
         [x] = quadprog(Q,f,A,b,[Aeq(1:2,:);1,1,1,1],beq,l,u);
         qdot(j,:) = x ;
         q(j+1,:) = q(j,:) + T_samp*transpose(x) ;   
     end 
-    m_s_new = Manipulability_Index;
+    m_s_new = tsv_traj;
     q_s_new = q;
     qdot_s_new = qdot;
     l_s_new=l;
