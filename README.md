@@ -1,2 +1,2 @@
-# Terminal Singular Value based Inverse Kinematic formulation for Redundant Serial Manipulator
+# Terminal Singular Value based Inverse Kinematic solver for Redundant Serial Manipulator
 
